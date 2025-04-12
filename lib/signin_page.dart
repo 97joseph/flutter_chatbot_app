@@ -21,7 +21,6 @@ class _SignInPageState extends State<SignInPage> {
 
   void _signIn() {
     if (_formKey.currentState!.validate()) {
-      // In a real app, you would authenticate with a backend here
       Navigator.pushReplacementNamed(context, '/dashboard');
     }
   }
@@ -39,9 +38,11 @@ class _SignInPageState extends State<SignInPage> {
             children: [
               TextFormField(
                 controller: _emailController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Email',
                   border: OutlineInputBorder(),
+                  filled: true,
+                  fillColor: Colors.grey[200],
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -53,9 +54,11 @@ class _SignInPageState extends State<SignInPage> {
               const SizedBox(height: 16),
               TextFormField(
                 controller: _passwordController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Password',
                   border: OutlineInputBorder(),
+                  filled: true,
+                  fillColor: Colors.grey[200],
                 ),
                 obscureText: true,
                 validator: (value) {
@@ -69,16 +72,19 @@ class _SignInPageState extends State<SignInPage> {
               ElevatedButton(
                 onPressed: _signIn,
                 style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.grey[800],
                   minimumSize: const Size(double.infinity, 50),
                 ),
                 child: const Text('Sign In'),
               ),
               TextButton(
                 onPressed: () {
-                  // For demo purposes, navigate to dashboard without auth
                   Navigator.pushReplacementNamed(context, '/dashboard');
                 },
-                child: const Text('Continue as Guest'),
+                child: Text(
+                  'Continue as Guest',
+                  style: TextStyle(color: Colors.grey[800]),
+                ),
               ),
             ],
           ),

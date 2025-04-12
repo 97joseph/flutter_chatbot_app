@@ -15,13 +15,13 @@ class _OnboardingScreensState extends State<OnboardingScreens> {
   final List<OnboardingPage> _pages = [
     const OnboardingPage(
       image: 'assets/onboarding1.png',
-      title: 'AfyaAI - Your Kenyan Health Companion',
-      description: 'Get instant medical advice tailored for Kenya\'s healthcare context. Our AI understands local diseases, medications, and healthcare facilities.',
+      title: 'InetCareAI - Your Kenyan Health Companion',
+      description: 'Get instant medical advice tailored for Kenya\'s healthcare context.',
     ),
     const OnboardingPage(
-      image: 'assets/telemedicine.png',
+      image: 'assets/onboarding1.png',
       title: '24/7 Medical Support',
-      description: 'Access reliable health information anytime, anywhere in Kenya. Connect with nearby healthcare providers when needed.',
+      description: 'Access reliable health information anytime, anywhere in Kenya.',
     ),
   ];
 
@@ -73,8 +73,8 @@ class _OnboardingScreensState extends State<OnboardingScreens> {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         color: _currentPage == index 
-                            ? Colors.green
-                            : Colors.grey,
+                            ? Colors.grey[800]
+                            : Colors.grey[400],
                       ),
                     ),
                   ),
@@ -84,7 +84,7 @@ class _OnboardingScreensState extends State<OnboardingScreens> {
                   width: MediaQuery.of(context).size.width * 0.8,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
+                      backgroundColor: Colors.grey[800],
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
@@ -139,19 +139,19 @@ class OnboardingPage extends StatelessWidget {
           const SizedBox(height: 40),
           Text(
             title,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
-              color: Colors.green,
+              color: Colors.grey[800],
             ),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 20),
           Text(
             description,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 16,
-              color: Colors.black54,
+              color: Colors.grey[600],
             ),
             textAlign: TextAlign.center,
           ),

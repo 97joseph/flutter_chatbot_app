@@ -14,11 +14,16 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false, //check
+      debugShowCheckedModeBanner: false,
       title: 'AfyaAI - Kenyan Medical Chatbot',
       theme: ThemeData(
-        primarySwatch: Colors.green,
+        primarySwatch: Colors.grey,
         fontFamily: 'Poppins',
+        scaffoldBackgroundColor: Colors.grey[100],
+        appBarTheme: AppBarTheme(
+          backgroundColor: Colors.grey[800],
+          foregroundColor: Colors.white,
+        ),
       ),
       home: const OnboardingScreens(),
       routes: {

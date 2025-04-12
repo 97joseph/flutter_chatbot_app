@@ -1,197 +1,75 @@
 import 'package:flutter/material.dart';
+import 'profile_page.dart';
 
-class DashboardPage extends StatelessWidget {
+class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
+
+  @override
+  State<DashboardPage> createState() => _DashboardPageState();
+}
+
+class _DashboardPageState extends State<DashboardPage> {
+  int _currentIndex = 0;
+  final List<Widget> _pages = [
+    const ChatScreen(),
+    const ProfilePage(), // Changed from placeholder to actual ProfilePage
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('AfyaAI Dashboard'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.person),
-            onPressed: () {
-              Navigator.pushNamed(context, '/profile');
-            },
+        title: const Text('InetCare AI Chat'),
+        backgroundColor: Colors.grey[800],
+      ),
+      body: _pages[_currentIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        onTap: (index) => setState(() => _currentIndex = index),
+        backgroundColor: Colors.grey[800],
+        selectedItemColor: Colors.white,
+        unselectedItemColor: Colors.grey[400],
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.chat),
+            label: 'Chat',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profile',
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: GridView.count(
-          crossAxisCount: 2,
-          crossAxisSpacing: 16,
-          mainAxisSpacing: 16,
-          children: [
-            _buildCategoryCard(
-              context,
-              icon: Icons.medical_services,
-              title: 'General Health',
-              color: Colors.blue,
-              category: 'general_health',
-            ),
-            _buildCategoryCard(
-              context,
-              icon: Icons.coronavirus,
-              title: 'Common Diseases',
-              color: Colors.orange,
-              category: 'common_diseases',
-            ),
-            _buildCategoryCard(
-              context,
-              icon: Icons.favorite,
-              title: 'Sexual Health',
-              color: Colors.pink,
-              category: 'sexual_health',
-            ),
-            _buildCategoryCard(
-              context,
-              icon: Icons.child_care,
-              title: 'Child Health',
-              color: Colors.green,
-              category: 'child_health',
-            ),
-            _buildCategoryCard(
-              context,
-              icon: Icons.child_care,
-              title: 'Mental Health',
-              color: Colors.purple,
-              category: 'mental_health',
-            ),
-            _buildCategoryCard(
-              context,
-              icon: Icons.child_care,
-              title: 'Elderly Care',
-              color: Colors.teal,
-              category: 'elderly_care',
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCategoryCard(
-    BuildContext context, {
-    required IconData icon,
-    required String title,
-    required Color color,
-    required String category,
-  }) {
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      color: color.withOpacity(0.1),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(12),
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ChatbotPage(category: category),
-            ),
-          );
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                icon,
-                size: 40,
-                color: color,
-              ),
-              const SizedBox(height: 12),
-              Text(
-                title,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: color,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }
 
-class ChatbotPage extends StatefulWidget {
-  final String category;
-
-  const ChatbotPage({super.key, required this.category});
+class ChatScreen extends StatefulWidget {
+  const ChatScreen({super.key});
 
   @override
-  State<ChatbotPage> createState() => _ChatbotPageState();
+  State<ChatScreen> createState() => _ChatScreenState();
 }
 
-class _ChatbotPageState extends State<ChatbotPage> {
+class _ChatScreenState extends State<ChatScreen> {
   final List<ChatMessage> _messages = [];
   final TextEditingController _textController = TextEditingController();
 
-  String _getCategoryDescription() {
-    switch (widget.category) {
-      case 'general_health':
-        return 'Ask about general health concerns, nutrition, or wellness tips relevant to Kenya';
-      case 'common_diseases':
-        return 'Information about malaria, typhoid, cholera and other common diseases in Kenya';
-      case 'sexual_health':
-        return 'Confidential advice about STIs, family planning, and reproductive health';
-      case 'child_health':
-        return 'Pediatric advice, immunization schedules, and child wellness';
-      case 'mental_health':
-        return 'Support for stress, anxiety, depression and mental wellbeing';
-      case 'elderly_care':
-        return 'Geriatric care, chronic conditions and elderly health management';
-      default:
-        return 'How can I help you today?';
-    }
-  }
-
   String _getBotResponse(String userText) {
     userText = userText.toLowerCase();
-    String categoryContext = '';
-
-    switch (widget.category) {
-      case 'general_health':
-        categoryContext = 'general health in Kenya';
-        if (userText.contains('nutrition') || userText.contains('diet')) {
-          return 'For Kenyan dietary advice, consider traditional foods like ugali with sukuma wiki for balanced nutrition.';
-        }
-        break;
-      case 'common_diseases':
-        categoryContext = 'common diseases in Kenya';
-        if (userText.contains('malaria')) {
-          return 'Malaria is endemic in Kenya. Use mosquito nets and seek immediate treatment if you experience fever, chills, and headache.';
-        }
-        break;
-      case 'sexual_health':
-        categoryContext = 'sexual health in Kenya';
-        if (userText.contains('hiv') || userText.contains('aids')) {
-          return 'Kenya has free HIV testing and treatment centers nationwide. Practice safe sex and get regular testing.';
-        }
-        break;
-      case 'child_health':
-        categoryContext = 'child health in Kenya';
-        if (userText.contains('vaccine') || userText.contains('immunization')) {
-          return 'Kenya provides free childhood vaccines at public health facilities. The schedule includes BCG, polio, measles, and more.';
-        }
-        break;
-    }
-
+    
     if (userText.contains('hello') || userText.contains('hi')) {
-      return 'Hello! I can help with ${categoryContext.isNotEmpty ? categoryContext : 'your health questions'}. What would you like to know?';
+      return 'Hello! I\'m InetCare AI, your health assistant. How can I help you today?';
+    } else if (userText.contains('malaria')) {
+      return 'Malaria is common in Kenya. Use mosquito nets and seek treatment if you experience fever, chills, or headache.';
+    } else if (userText.contains('hiv') || userText.contains('aids')) {
+      return 'Kenya has free HIV testing and treatment centers. Practice safe sex and get regular testing.';
+    } else if (userText.contains('vaccine') || userText.contains('immunization')) {
+      return 'Kenya provides free childhood vaccines at public health facilities including BCG, polio, and measles.';
     } else if (userText.contains('help')) {
-      return 'I specialize in ${categoryContext.isNotEmpty ? categoryContext : 'health information'}. Try asking specific questions about symptoms, prevention, or treatment.';
+      return 'I can provide information about common health concerns. Try asking about symptoms, prevention, or treatment.';
     } else {
-      return "I understand you're asking about ${categoryContext.isNotEmpty ? categoryContext : 'health'}. For more specific advice, please provide more details about your concern.";
+      return "I understand you're asking about health. For better advice, please provide more details about your concern.";
     }
   }
 
@@ -217,26 +95,20 @@ class _ChatbotPageState extends State<ChatbotPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(_getCategoryTitle(widget.category)),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
-      body: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(16),
-            color: _getCategoryColor(widget.category).withOpacity(0.1),
-            child: Text(
-              _getCategoryDescription(),
-              style: const TextStyle(fontSize: 14, color: Colors.black54),
-              textAlign: TextAlign.center,
-            ),
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(16),
+          color: Colors.grey[200],
+          child: const Text(
+            'Ask me about health concerns. I can help with symptoms, conditions, and general health advice.',
+            style: TextStyle(fontSize: 14, color: Colors.black87),
+            textAlign: TextAlign.center,
           ),
-          Expanded(
+        ),
+        Expanded(
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: ListView.builder(
               reverse: true,
               itemCount: _messages.length,
@@ -245,65 +117,44 @@ class _ChatbotPageState extends State<ChatbotPage> {
               },
             ),
           ),
-          const Divider(height: 1.0),
-          Container(
-            decoration: BoxDecoration(
-              color: Theme.of(context).cardColor,
-            ),
-            child: _buildTextComposer(),
+        ),
+        const Divider(height: 1.0),
+        Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).cardColor,
           ),
-        ],
-      ),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: _buildTextComposer(),
+        ),
+      ],
     );
   }
 
-  String _getCategoryTitle(String category) {
-    switch (category) {
-      case 'general_health': return 'General Health';
-      case 'common_diseases': return 'Common Diseases';
-      case 'sexual_health': return 'Sexual Health';
-      case 'child_health': return 'Child Health';
-      case 'mental_health': return 'Mental Health';
-      case 'elderly_care': return 'Elderly Care';
-      default: return 'Health Assistant';
-    }
-  }
-
-  Color _getCategoryColor(String category) {
-    switch (category) {
-      case 'general_health': return Colors.blue;
-      case 'common_diseases': return Colors.orange;
-      case 'sexual_health': return Colors.pink;
-      case 'child_health': return Colors.green;
-      case 'mental_health': return Colors.purple;
-      case 'elderly_care': return Colors.teal;
-      default: return Colors.blue;
-    }
-  }
-
   Widget _buildTextComposer() {
-    return IconTheme(
-      data: IconThemeData(color: _getCategoryColor(widget.category)),
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: Row(
-          children: [
-            Flexible(
-              child: TextField(
-                controller: _textController,
-                onSubmitted: _handleSubmitted,
-                decoration: InputDecoration.collapsed(
-                  hintText: 'Ask about ${_getCategoryTitle(widget.category)}...',
-                ),
+    return Row(
+      children: [
+        Flexible(
+          child: TextField(
+            controller: _textController,
+            onSubmitted: _handleSubmitted,
+            decoration: InputDecoration(
+              hintText: 'Type your health question...',
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(20),
+                borderSide: BorderSide(color: Colors.grey[300]!),
               ),
+              filled: true,
+              fillColor: Colors.grey[200],
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16),
             ),
-            IconButton(
-              icon: const Icon(Icons.send),
-              onPressed: () => _handleSubmitted(_textController.text),
-            ),
-          ],
+          ),
         ),
-      ),
+        IconButton(
+          icon: const Icon(Icons.send),
+          color: Colors.grey[700],
+          onPressed: () => _handleSubmitted(_textController.text),
+        ),
+      ],
     );
   }
 }
@@ -321,17 +172,17 @@ class ChatMessage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0),
+      margin: const EdgeInsets.symmetric(vertical: 10.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           CircleAvatar(
             backgroundColor: isUser 
-                ? Colors.grey[300]
-                : Theme.of(context).primaryColor,
+                ? Colors.grey[400]
+                : Colors.grey[600],
             child: Icon(
               isUser ? Icons.person : Icons.medical_services,
-              color: isUser ? Colors.grey : Colors.white,
+              color: Colors.white,
             ),
           ),
           const SizedBox(width: 16.0),
@@ -340,11 +191,19 @@ class ChatMessage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  isUser ? 'You' : 'AfyaAI',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  isUser ? 'You' : 'InetCare AI',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey[800],
+                  ),
                 ),
                 Container(
                   margin: const EdgeInsets.only(top: 5.0),
+                  padding: const EdgeInsets.all(12.0),
+                  decoration: BoxDecoration(
+                    color: isUser ? Colors.grey[200] : Colors.grey[300],
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                   child: Text(text),
                 ),
               ],
