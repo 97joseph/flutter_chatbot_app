@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'onboarding_screens.dart';
 import 'signin_page.dart';
 import 'profile_page.dart';
 import 'dashboard_page.dart';
@@ -13,11 +14,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Chatbot App',
+      debugShowCheckedModeBanner: false, //check
+      title: 'AfyaAI - Kenyan Medical Chatbot',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.green,
+        fontFamily: 'Poppins',
       ),
-      home: const SignInPage(),
+      home: const OnboardingScreens(),
       routes: {
         '/signin': (context) => const SignInPage(),
         '/profile': (context) => const ProfilePage(),
