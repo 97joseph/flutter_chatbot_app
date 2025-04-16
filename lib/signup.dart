@@ -1,41 +1,44 @@
-import 'state.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'signup.dart';
+import 'state.dart';
 
-class SignInPage extends StatefulWidget {
-  const SignInPage({super.key});
+class SignUpPage extends StatefulWidget {
+  const SignUpPage({super.key});
 
   @override
-  State<SignInPage> createState() => _SignInPageState();
+  State<SignUpPage> createState() => _SignUpPageState();
 }
 
-class _SignInPageState extends State<SignInPage> {
+class _SignUpPageState extends State<SignUpPage> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
   bool _isLoading = false;
-  bool _isGuest = false;
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
-  Future<void> _signIn() async {
+  Future<void> _signUp() async {
     if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isLoading = true;
-        _isGuest = false;
-      });
+      if (_passwordController.text != _confirmPasswordController.text) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Passwords do not match')),
+        );
+        return;
+      }
+
+      setState(() => _isLoading = true);
       
       try {
         final response = await http.post(
-          Uri.parse(ApiConfig.signIn),
+          Uri.parse(ApiConfig.signUp),
           headers: {'Content-Type': 'application/json'},
           body: json.encode({
             'email': _emailController.text,
@@ -44,16 +47,13 @@ class _SignInPageState extends State<SignInPage> {
         );
 
         if (response.statusCode == 200) {
-          final data = json.decode(response.body);
-          final prefs = await SharedPreferences.getInstance();
-          await prefs.setString('authToken', data['token']);
-          await prefs.setString('userEmail', _emailController.text);
           Navigator.pushReplacementNamed(context, '/dashboard');
         } else {
-          final error = json.decode(response.body)['error'] ?? 'Sign in failed';
+          final error = json.decode(response.body)['error'] ?? 'Signup failed';
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(error)),
           );
+          debugPrint(response.body);
         }
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -65,15 +65,10 @@ class _SignInPageState extends State<SignInPage> {
     }
   }
 
-  void _continueAsGuest() {
-    setState(() => _isGuest = true);
-    Navigator.pushReplacementNamed(context, '/dashboard');
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Sign In')),
+      appBar: AppBar(title: const Text('Sign Up')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -93,6 +88,9 @@ class _SignInPageState extends State<SignInPage> {
                   if (value == null || value.isEmpty) {
                     return 'Please enter your email';
                   }
+                  if (!value.contains('@')) {
+                    return 'Please enter a valid email';
+                  }
                   return null;
                 },
               ),
@@ -110,36 +108,46 @@ class _SignInPageState extends State<SignInPage> {
                   if (value == null || value.isEmpty) {
                     return 'Please enter your password';
                   }
+                  if (value.length < 6) {
+                    return 'Password must be at least 6 characters';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _confirmPasswordController,
+                decoration: InputDecoration(
+                  labelText: 'Confirm Password',
+                  border: const OutlineInputBorder(),
+                  filled: true,
+                  fillColor: Colors.grey[200],
+                ),
+                obscureText: true,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please confirm your password';
+                  }
                   return null;
                 },
               ),
               const SizedBox(height: 24),
               ElevatedButton(
-                onPressed: _isLoading ? null : _signIn,
+                onPressed: _isLoading ? null : _signUp,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.grey[800],
                   minimumSize: const Size(double.infinity, 50),
                 ),
                 child: _isLoading 
                     ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text('Sign In'),
-              ),
-              TextButton(
-                onPressed: _isGuest ? null : _continueAsGuest,
-                child: Text(
-                  'Continue as Guest',
-                  style: TextStyle(color: Colors.grey[800]),
-                ),
+                    : const Text('Sign Up'),
               ),
               TextButton(
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const SignUpPage()),
-                  );
+                  Navigator.pop(context);
                 },
                 child: Text(
-                  'Create an account',
+                  'Already have an account? Sign In',
                   style: TextStyle(color: Colors.grey[800]),
                 ),
               ),

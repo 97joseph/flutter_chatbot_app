@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'profile_page.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'state.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -12,7 +15,7 @@ class _DashboardPageState extends State<DashboardPage> {
   int _currentIndex = 0;
   final List<Widget> _pages = [
     const ChatScreen(),
-    const ProfilePage(), // Changed from placeholder to actual ProfilePage
+    const ProfilePage(),
   ];
 
   @override
@@ -54,22 +57,33 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   final List<ChatMessage> _messages = [];
   final TextEditingController _textController = TextEditingController();
+  bool _isLoading = false;
+  String? _sessionId;
 
-  String _getBotResponse(String userText) {
-    userText = userText.toLowerCase();
+  Future<String> _getBotResponse(String userText) async {
+    setState(() => _isLoading = true);
     
-    if (userText.contains('hello') || userText.contains('hi')) {
-      return 'Hello! I\'m InetCare AI, your health assistant. How can I help you today?';
-    } else if (userText.contains('malaria')) {
-      return 'Malaria is common in Kenya. Use mosquito nets and seek treatment if you experience fever, chills, or headache.';
-    } else if (userText.contains('hiv') || userText.contains('aids')) {
-      return 'Kenya has free HIV testing and treatment centers. Practice safe sex and get regular testing.';
-    } else if (userText.contains('vaccine') || userText.contains('immunization')) {
-      return 'Kenya provides free childhood vaccines at public health facilities including BCG, polio, and measles.';
-    } else if (userText.contains('help')) {
-      return 'I can provide information about common health concerns. Try asking about symptoms, prevention, or treatment.';
-    } else {
-      return "I understand you're asking about health. For better advice, please provide more details about your concern.";
+    try {
+      final response = await http.post(
+        Uri.parse(ApiConfig.doctorai),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'message': userText,
+          'sessionId': _sessionId,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        _sessionId = data['sessionId'] ?? _sessionId;
+        return data['response'];
+      } else {
+        return "Sorry, I'm having trouble responding. Please try again later.";
+      }
+    } catch (e) {
+      return "Error: ${e.toString()}";
+    } finally {
+      setState(() => _isLoading = false);
     }
   }
 
@@ -83,10 +97,10 @@ class _ChatScreenState extends State<ChatScreen> {
       ));
     });
 
-    Future.delayed(const Duration(milliseconds: 500), () {
+    _getBotResponse(text).then((response) {
       setState(() {
         _messages.insert(0, ChatMessage(
-          text: _getBotResponse(text),
+          text: response,
           isUser: false,
         ));
       });
@@ -118,6 +132,11 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           ),
         ),
+        if (_isLoading)
+          const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: CircularProgressIndicator(),
+          ),
         const Divider(height: 1.0),
         Container(
           decoration: BoxDecoration(

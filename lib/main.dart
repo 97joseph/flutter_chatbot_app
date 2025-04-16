@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'onboarding_screens.dart';
 import 'signin_page.dart';
+import 'signup.dart'; // Add this import
 import 'profile_page.dart';
 import 'dashboard_page.dart';
 
@@ -28,6 +29,7 @@ class MyApp extends StatelessWidget {
       home: const OnboardingScreens(),
       routes: {
         '/signin': (context) => const SignInPage(),
+        '/signup': (context) => const SignUpPage(), // Add this route
         '/profile': (context) => const ProfilePage(),
         '/dashboard': (context) => const DashboardPage(),
       },
