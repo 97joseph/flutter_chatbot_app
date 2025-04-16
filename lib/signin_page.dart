@@ -48,6 +48,12 @@ class _SignInPageState extends State<SignInPage> {
           final prefs = await SharedPreferences.getInstance();
           await prefs.setString('authToken', data['token']);
           await prefs.setString('userEmail', _emailController.text);
+          
+          // Show success message before navigation
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Login successful!')),
+          );
+          
           Navigator.pushReplacementNamed(context, '/dashboard');
         } else {
           final error = json.decode(response.body)['error'] ?? 'Sign in failed';
@@ -67,6 +73,10 @@ class _SignInPageState extends State<SignInPage> {
 
   void _continueAsGuest() {
     setState(() => _isGuest = true);
+    // Show message for guest access
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Continuing as guest')),
+    );
     Navigator.pushReplacementNamed(context, '/dashboard');
   }
 
@@ -75,7 +85,7 @@ class _SignInPageState extends State<SignInPage> {
     return Scaffold(
       appBar: AppBar(title: const Text('Sign In')),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(8.0),
         child: Form(
           key: _formKey,
           child: Column(

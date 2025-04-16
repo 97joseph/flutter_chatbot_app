@@ -186,7 +186,7 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             const SizedBox(height: 16),
             Text(
-              '© 2023 InetCare Technologies',
+              '© 2025 InetCare Technologies',
               style: TextStyle(
                 color: Colors.grey[600],
                 fontSize: 12,

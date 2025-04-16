@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'state.dart';
+import 'signin_page.dart'; // Add this import
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -47,7 +48,14 @@ class _SignUpPageState extends State<SignUpPage> {
         );
 
         if (response.statusCode == 200) {
-          Navigator.pushReplacementNamed(context, '/dashboard');
+          // Changed from navigating to dashboard to showing success message and going to login
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Signup successful! Please login')),
+          );
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const SignInPage()),
+          );
         } else {
           final error = json.decode(response.body)['error'] ?? 'Signup failed';
           ScaffoldMessenger.of(context).showSnackBar(
@@ -70,7 +78,7 @@ class _SignUpPageState extends State<SignUpPage> {
     return Scaffold(
       appBar: AppBar(title: const Text('Sign Up')),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(6.0),
         child: Form(
           key: _formKey,
           child: Column(
